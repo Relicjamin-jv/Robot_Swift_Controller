@@ -8,9 +8,10 @@
 import UIKit
 import SwiftUI
 import AVFoundation
+import Vision
 
 class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
-    
+    private var contouredImage: UIImage?
     
     @IBOutlet weak var previewView: UIView!
     @IBOutlet weak var photoView: UIImageView!
@@ -31,8 +32,18 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     
     @IBAction func takePhoto(_ sender: Any){
         photoView.contentMode = .scaleAspectFill
-        var ciImage = CIImage(cvImageBuffer: currentFrame!)
-        self.photoView.image = UIImage(ciImage: ciImage)
+        let ciImage = CIImage(cvImageBuffer: currentFrame!)
+        let cgImage = convertCIImage(inputImg: ciImage)
+        detectVisionContours(image: UIImage(cgImage: cgImage!))
+        self.photoView.image = contouredImage!
+    }
+    
+    func convertCIImage(inputImg: CIImage) -> CGImage? {
+        let context = CIContext()
+        if let cgImage = context.createCGImage(inputImg, from: inputImg.extent){
+            return cgImage
+        }
+        return nil
     }
 
     
@@ -127,7 +138,74 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     func removeMask() {
         maskLayer.removeFromSuperlayer()
     }
-}
+    
+    // adding the coin reader functions
+    func detectVisionContours(image: UIImage) {
+        var points : String = ""
+        let context = CIContext()
+        let sourceImage =  image
+        print(sourceImage)
+        let inputImage = CIImage(cgImage: sourceImage.cgImage!)
+
+            let contourRequest = VNDetectContoursRequest()
+            contourRequest.revision = VNDetectContourRequestRevision1
+            contourRequest.contrastAdjustment = 1.0
+            contourRequest.detectDarkOnLight = true
+            contourRequest.maximumImageDimension = 512
+
+            let requestHandler = VNImageRequestHandler(ciImage: inputImage, options: [:])
+
+            do {
+                try requestHandler.perform([contourRequest])
+                if let contoursObservation = contourRequest.results?.first as? VNContoursObservation {
+                    points = String(contoursObservation.contourCount)
+                    self.contouredImage = drawContours(contoursObservation: contoursObservation, sourceImage: sourceImage.cgImage!)
+
+                    for i in 0..<contoursObservation.contourCount {
+                        if let contour = try? contoursObservation.contour(at: i) as VNContour {
+                            let boundingCircle = try VNGeometryUtils.boundingCircle(for: contour)
+                            let diameter = boundingCircle.radius * 2
+                            if diameter > 0.1 {
+                                print("Bounding circle diameter for contour \(i+1): \(diameter)")
+                            }
+                        }
+                    }
+                }
+            } catch {
+                print("Error performing contour detection: \(error.localizedDescription)")
+            }
+
+       }
+    }
+
+
+
+
+
+
+    public func drawContours(contoursObservation: VNContoursObservation, sourceImage: CGImage) -> UIImage {
+         let size = CGSize(width: sourceImage.width, height: sourceImage.height)
+         let renderer = UIGraphicsImageRenderer(size: size)
+         
+         let renderedImage = renderer.image { (context) in
+         let renderingContext = context.cgContext
+
+         let flipVertical = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: size.height)
+         renderingContext.concatenate(flipVertical)
+
+         renderingContext.draw(sourceImage, in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+         
+         renderingContext.scaleBy(x: size.width, y: size.height)
+         renderingContext.setLineWidth(5.0 / CGFloat(size.width))
+         let redUIColor = UIColor.red
+         renderingContext.setStrokeColor(redUIColor.cgColor)
+         renderingContext.addPath(contoursObservation.normalizedPath)
+         renderingContext.strokePath()
+         }
+         
+         return renderedImage
+     }
+
 
 extension CGPoint {
     func scaled(to size: CGSize) -> CGPoint {
@@ -135,4 +213,6 @@ extension CGPoint {
                        y: self.y * size.height)
     }
 }
+
+
 

@@ -441,7 +441,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = QKK22TXLY8;
+				DEVELOPMENT_TEAM = 6BDH3G627D;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Controller/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Use Bluetooth Always";
@@ -457,7 +457,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.grovecity.Controller;
+				PRODUCT_BUNDLE_IDENTIFIER = com.grovecity.ControllerBeta;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -472,7 +472,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = QKK22TXLY8;
+				DEVELOPMENT_TEAM = 6BDH3G627D;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Controller/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Use Bluetooth Always";
@@ -488,7 +488,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.grovecity.Controller;
+				PRODUCT_BUNDLE_IDENTIFIER = com.grovecity.ControllerBeta;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
